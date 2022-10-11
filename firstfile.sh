@@ -12,17 +12,22 @@ workingDayPerMonth=20
 presentFullDay=0
 presentHalfDay=0
 absent=0
-while [[ day -lt 20 ]]
+
+totalWorkingHours=0
+
+while [[ (day -lt 20) || (totalWorkingHour -eq 100) ]]
 do
 	num=$((RANDOM%3))
 	case $num in
 		$fullDay)
 			fullDaySalary=$(($wagePerHour * $fullDayHour))
 			((presentFullDay++))
+			totalWorkingHours=$(($totalWorkingHours+8))
 		;;
 		$halfDay)
 			halfDaySalary=$(($wagePerHour * $halfDayHour))
 			((presentHalfDay++))
+			totalWorkingHours=$(($totalWorkingHours+4))
 		;;
 		*)
 			fullDaySalary=$(($wagePerHour * $absentDayHour))
@@ -32,9 +37,13 @@ do
 	((day++))
 done
 
-echo $presentFullDay
-echo $presentHalfDay
-echo $absent
+#echo $presentFullDay
+#echo $presentHalfDay
+#echo $absent
 
 wageForMonth=$(( ( (($presentFullDay * $fullDayHour) * $wagePerHour) + (($presentHalfDay * $halfDayHour) * $wagePerHour) + ($absent * 0)) ))
-echo $wageForMonth
+#echo $wageForMonth
+#echo $wageForMonth
+
+#echo $totalWorkingHours
+
