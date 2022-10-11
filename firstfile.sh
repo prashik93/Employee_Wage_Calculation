@@ -32,9 +32,9 @@ do
 	((day++))
 done
 
-#echo $presentFullDay
-#echo $presentHalfDay
-#echo $absent
+echo $presentFullDay
+echo $presentHalfDay
+echo $absent
 
-wageForMonth=$(( (($presentFullDay * $wagePerHour) + ($presentHalfDay * $wagePerHour) + ($absent * 0)) ))
-#echo $wageForMonth
+wageForMonth=$(( ( (($presentFullDay * $fullDayHour) * $wagePerHour) + (($presentHalfDay * $halfDayHour) * $wagePerHour) + ($absent * 0)) ))
+echo $wageForMonth
