@@ -14,8 +14,11 @@ presentHalfDay=0
 absent=0
 
 totalWorkingHours=0
+assumeWorkingHours=100
+totalDays=0
 
 declare -a dailyAndTotalWageArray
+declare -A dayAndTotalWageDictionary
 
 index=${#dailyAndTotalWageArray[@]}
 
@@ -23,40 +26,47 @@ index=${#dailyAndTotalWageArray[@]}
 function calculateHours(){
 	if [ $1 -eq $fullDay ]
 	then
-		totalWorkingHours=$(($totalWorkingHours+8))
+		totalWorkingHours=$(($totalWorkingHours + $fullDayHour))
 		dailyWage=$(($totalWorkingHours * $wagePerHour))
 		dailyAndTotalWageArray[$index]=$dailyWage
+		dayAndTotalWageDictionary[$totalDays]=$dailyWage
 
 	elif [ $2 -eq $halfDay ]
 	then
-		totalWorkingHours=$(($totalWorkingHours+4))
+		totalWorkingHours=$(($totalWorkingHours + $halfDayHour))
 		dailyWage=$(($totalWorkingHours * $wagePerHour))
 		dailyAndTotalWageArray[$index]=$dailyWage
+		dayAndTotalWageDictionary[$totalDays]=$dailyWage
+
 	else
 		dailyWage=$(($totalWorkingHours * $wagePerHour))
 		dailyAndTotalWageArray[$index]=$dailyWage
+		dayAndTotalWageDictionary[$totalDays]=$dailyWage
 	fi
 	((index++))
 }
 
-while [[ (day -lt 20) || (totalWorkingHour -eq 100) ]]
+while [[ (day -lt $workingDayPerMonth) || ($totalWorkingHour -eq $assumeWorkingHours) ]]
 do
 	num=$((RANDOM%3))
 	case $num in
 		$fullDay)
 			fullDaySalary=$(($wagePerHour * $fullDayHour))
 			((presentFullDay++))
-			calculateHours $fullDay 0 0
+			totalDays=$(($totalDays+1))
+			calculateHours $fullDay
 		;;
 		$halfDay)
 			halfDaySalary=$(($wagePerHour * $halfDayHour))
 			((presentHalfDay++))
-			calculateHours 0 $halfDay 0
+			totalDays=$(($totalDays+1))
+			calculateHours 0 $halfDay
 
 		;;
 		*)
 			fullDaySalary=$(($wagePerHour * $absentDayHour))
 			((absent++))
+			totalDays=$(($totalDays+1))
 			calculateHours 0 0 0
 		;;
 	esac
@@ -65,6 +75,9 @@ done
 
 
 wageForMonth=$((totalWorkingHours * wagePerHour))
+
+dayAndDailyWages=`for key in "${!dayAndTotalWageDictionary[@]}";do echo "$key = ${dayAndTotalWageDictionary[$key]}";done | sort -n`
+
 
 echo "Full Day Present :- $presentFullDay"
 echo "Half Day Present :- $presentHalfDay"
@@ -75,3 +88,8 @@ echo "Total Working Hours :- $totalWorkingHours"
 echo "Daily Wage :- $dailyWage"
 echo "Daily and Total wage Array :- ${dailyAndTotalWageArray[@]}"
 
+echo "Day and daily wage along with total wage :- ${!dayAndTotalWageDictionary[@]}"
+echo "Day and daily wage along with total wage :- ${dayAndTotalWageDictionary[@]}"
+echo "Day and daily wage along with total wage :- ${#dayAndTotalWageDictionary[@]}"
+
+echo "Day and daily wages :- $dayAndDailyWages"
