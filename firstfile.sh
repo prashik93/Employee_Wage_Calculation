@@ -15,6 +15,17 @@ absent=0
 
 totalWorkingHours=0
 
+function calculateHours(){
+	if [ $1 -eq $fullDay ]
+	then
+		totalWorkingHours=$(($totalWorkingHours+8))
+
+	elif [ $2 -eq $halfDay ]
+	then
+		totalWorkingHours=$(($totalWorkingHours+4))
+	fi
+}
+
 while [[ (day -lt 20) || (totalWorkingHour -eq 100) ]]
 do
 	num=$((RANDOM%3))
@@ -22,12 +33,12 @@ do
 		$fullDay)
 			fullDaySalary=$(($wagePerHour * $fullDayHour))
 			((presentFullDay++))
-			totalWorkingHours=$(($totalWorkingHours+8))
+			calculateHours $fullDay 0
 		;;
 		$halfDay)
 			halfDaySalary=$(($wagePerHour * $halfDayHour))
 			((presentHalfDay++))
-			totalWorkingHours=$(($totalWorkingHours+4))
+			calculateHours 0 $halfDay
 		;;
 		*)
 			fullDaySalary=$(($wagePerHour * $absentDayHour))
@@ -37,13 +48,12 @@ do
 	((day++))
 done
 
-#echo $presentFullDay
-#echo $presentHalfDay
-#echo $absent
+wageForMonth=$((totalWorkingHours * wagePerHour))
 
-wageForMonth=$(( ( (($presentFullDay * $fullDayHour) * $wagePerHour) + (($presentHalfDay * $halfDayHour) * $wagePerHour) + ($absent * 0)) ))
-#echo $wageForMonth
-#echo $wageForMonth
 
-#echo $totalWorkingHours
+echo "Full Day Present :- $presentFullDay"
+echo "Half Day Present :- $presentHalfDay"
+echo "Absent :- $absent"
+echo "Salary for a month :- $wageForMonth"
+echo "Total Working Hours :- $totalWorkingHours"
 
